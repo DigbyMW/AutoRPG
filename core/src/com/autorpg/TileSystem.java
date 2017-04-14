@@ -5,18 +5,20 @@ import com.badlogic.gdx.graphics.Texture; // Used for creating textures from ima
 import com.badlogic.gdx.graphics.g2d.TextureRegion; // Used to split a texture into tiles.
 import com.badlogic.gdx.graphics.g2d.SpriteBatch; // Used to draw texture regions.
 
-
 public class TileSystem {
-	Tiles tiles;
-	SpriteBatch sprite_batch;
+	private Tiles tiles;
+	private SpriteBatch sprite_batch;
 	
 	TileSystem () {
-		// Initialize sprite_batch and tiles.
+		// Initialization
 		sprite_batch = new SpriteBatch();
-		tiles = new Tiles(1);
+		tiles = new Tiles(4);
 		
 		// Add content to tiles.
 		tiles.add("placeholder", new Texture(Gdx.files.internal("placeholder.png")), 0);
+		tiles.add("test r", new Texture(Gdx.files.internal("test.png")), 0);
+		tiles.add("test g", new Texture(Gdx.files.internal("test.png")), 1);
+		tiles.add("test b", new Texture(Gdx.files.internal("test.png")), 2);
 	}
 	
 	// Returns a tile from tiles.
@@ -59,7 +61,7 @@ public class TileSystem {
 		
 		public void add(String name, Texture texture, int tile) {
 			// Add new tile to the next index and increment the index.
-			tiles[tiles_index] = new TextureRegion(texture, 0 + (tile * 16), 0, 16, 16 + (tile * 16));
+			tiles[tiles_index] = new TextureRegion(texture, 0 + (tile * 16), 0, 16, 16);
 			tile_names[tiles_index] = name;
 			tiles_index ++;
 		}
@@ -79,4 +81,5 @@ public class TileSystem {
 		}
 		
 	}
+	
 }

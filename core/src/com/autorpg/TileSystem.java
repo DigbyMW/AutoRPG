@@ -82,4 +82,44 @@ public class TileSystem {
 		
 	}
 	
+	public class TileMap { // Used to store a collection of tiles in a specific formation.
+		private TextureRegion[][] map; // 2D array of tiles.
+		
+		TileMap(int width, int height) {
+			map = new TextureRegion[width][height];
+		}
+		
+		public void set(TextureRegion tile, int x, int y) {
+			map[x][y] = tile;
+		}
+		
+		/*
+		 * position_x, position_y: where to draw the map in the window
+		 * view_x, view_y: position of the view into the map
+		 * view_width, view_height: size of the view into the map
+		 */
+		public void draw(int position_x, int position_y, int view_x, int view_y, int view_width, int view_height) {
+			// Bottom right edges of the view:
+			int view_edge_h = view_x + view_width;
+			int view_edge_v = view_y + view_height;
+			
+			// Iterate through x and y positions in map:
+			for (int x = view_x; x < view_edge_h; x ++) {
+				for (int y = view_y; y < view_edge_v; y ++) {
+					
+					// Prevent accessing non-existant array indexes
+					if (x >= 0 && x < map.length &&
+						y >= 0 && y < map[0].length) {
+						
+						// Don't draw null tiles
+						if (map[x][y] != null) {
+							draw_tile(map[x][y], position_x + x, position_y + y);
+						}
+					}
+				}
+			}
+		}
+		
+	}
+	
 }

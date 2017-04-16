@@ -15,7 +15,6 @@ public class TileSystem {
 		tiles = new Tiles(4);
 		
 		// Add content to tiles.
-		tiles.add("placeholder", new Texture(Gdx.files.internal("placeholder.png")), 0);
 		tiles.add("test r", new Texture(Gdx.files.internal("test.png")), 0);
 		tiles.add("test g", new Texture(Gdx.files.internal("test.png")), 1);
 		tiles.add("test b", new Texture(Gdx.files.internal("test.png")), 2);
@@ -113,7 +112,8 @@ public class TileSystem {
 						
 						// Don't draw null tiles
 						if (map[x][y] != null) {
-							draw_tile(map[x][y], position_x + x, position_y + y);
+							// The offset of view_x and view_y are subtracted from x and y.
+							draw_tile(map[x][y], position_x + x - view_x, position_y + y - view_y);
 						}
 					}
 				}

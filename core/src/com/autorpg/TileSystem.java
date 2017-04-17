@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch; // Used to draw texture region
 public class TileSystem {
 	private Tiles tiles;
 	private SpriteBatch sprite_batch;
+	private TextureRegion[] font; // Ascii character tiles
 	
 	TileSystem () {
 		// Initialization
@@ -18,6 +19,13 @@ public class TileSystem {
 		tiles.add("test r", new Texture(Gdx.files.internal("test.png")), 0);
 		tiles.add("test g", new Texture(Gdx.files.internal("test.png")), 1);
 		tiles.add("test b", new Texture(Gdx.files.internal("test.png")), 2);
+		
+		// Set characters
+		font = new TextureRegion[128];
+		Texture font_texture = new Texture(Gdx.files.internal("font.png"));
+		for (int i = 0; i < font.length; i ++) {
+			font[i] = new TextureRegion(font_texture, 0 + (i * 16), 0, 16, 16);
+		}
 	}
 	
 	// Returns a tile from tiles.
@@ -44,6 +52,46 @@ public class TileSystem {
 	public void dispose() {
 		sprite_batch.dispose();
 	}
+	
+	public TileMap string_to_tilemap(String text) {
+		int line_length = 0; // Length of current line
+		int map_length = 0; // Width of map
+		int lines = 1; // Number of new lines
+		
+		for (int i = 0; i < text.length(); i ++) {
+			if (text.charAt(i) != '\n') {
+				// Increase length for new characters
+				line_length ++;
+				if (line_length > map_length) {
+					// map_length should be as long as
+					// the longest line.
+					map_length = line_length;
+				}
+			} else {
+				// Add new lines for line breaks
+				line_length = 0;
+				lines ++;
+			}
+		}
+		
+		// Initialize empty map with the right size
+		TileMap map = new TileMap(map_length, lines);
+		int line = 0;
+		
+		// Populate map with character tiles
+		for (int i = 0; i < text.length(); i ++) {
+			if (text.charAt(i) != '\n') {
+				// Use ascii from character to get the right tile
+				map.set(font[(int) text.charAt(i)], i, line);
+			} else {
+				// Move down a line for line breaks
+				line ++;
+			}
+		}
+		
+		return map;
+	}
+	
 	
 	private class Tiles { // Used to store tiles and match them to names.
 		TextureRegion placeholder; // A placeholder tile to return when an invalid tile is requested
@@ -80,6 +128,7 @@ public class TileSystem {
 		}
 		
 	}
+	
 	
 	public class TileMap { // Used to store a collection of tiles in a specific formation.
 		private TextureRegion[][] map; // 2D array of tiles.
@@ -121,5 +170,6 @@ public class TileSystem {
 		}
 		
 	}
+	
 	
 }

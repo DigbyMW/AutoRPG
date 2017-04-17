@@ -10,33 +10,14 @@ public class AutoRPG extends ApplicationAdapter {
 	private TextureRegion test_g;
 	private TextureRegion test_b;
 	private TileSystem tile_system;
-	private TileSystem.TileMap map;
+	private TileSystem.TileMap text; // Test map
 	
 	@Override
 	public void create () {
-		// Initializes tile system and regions.
+		// Initializes tile system and text map.
 		tile_system = new TileSystem();
-		test_r = tile_system.get_tile("test r");
-		test_g = tile_system.get_tile("test g");
-		test_b = tile_system.get_tile("test b");
-		
-		// Initialize and populate map.
-		map = tile_system.new TileMap(15, 15);
-		for (int x = 0; x < 15; x ++) {
-			for (int y = 0; y < 15; y ++) {
-				if (x == y || x + y == 14) {
-					// Red cross
-					map.set(test_r, x, y);
-				} else if ((y == 7 && x < 14 && x > 0)||
-						   (x == 7 && y < 14 && y > 0)) {
-					// Green Cross
-					map.set(test_g, x, y);
-				} else {
-					// Blue Background
-					map.set(test_b, x, y);
-				}
-			}
-		}
+		// Generate new map with the text "Hellow World"
+		text = tile_system.string_to_tilemap("Hello World");
 	}
 
 	@Override
@@ -46,25 +27,8 @@ public class AutoRPG extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		tile_system.batch_begin();
-		
-		// Original
-		map.draw(0, 0, 0, 0, 15, 15);
-		
-		// Bottom Row
-		map.draw(16, 0, 0, 0, 5, 5);
-		map.draw(22, 0, 5, 0, 5, 5);
-		map.draw(28, 0, 10, 0, 5, 5);
-		
-		// Middle Row
-		map.draw(16, 6, 0, 5, 5, 5);
-		map.draw(22, 6, 5, 5, 5, 5);
-		map.draw(28, 6, 10, 5, 5, 5);
-		
-		// Top Row
-		map.draw(16, 12, 0, 10, 5, 5);
-		map.draw(22, 12, 5, 10, 5, 5);
-		map.draw(28, 12, 10, 10, 5, 5);
-		
+		// Draw map
+		text.draw(1, 1, 0, 0, 11, 1);
 		tile_system.batch_end();
 	}
 	

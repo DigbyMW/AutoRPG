@@ -15,6 +15,12 @@ public class AutoRPG extends ApplicationAdapter {
 		tile_system = new TileSystem();
 		// Generate new map with the text "Hellow World"
 		text = tile_system.string_to_tilemap("Hello\nWorld!");
+		
+		// Average method testing:
+		Terrain test = new Terrain();
+		for (int i = 0; i < 30; i ++) {
+			test.average_test(0.3, 0.2, 0.4, 0.5, 0.1);
+		}
 	}
 
 	@Override

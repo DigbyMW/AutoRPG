@@ -6,9 +6,6 @@ import com.badlogic.gdx.graphics.GL20; // Used for getting colours
 import com.badlogic.gdx.graphics.g2d.TextureRegion; // Used for tiles.
 
 public class AutoRPG extends ApplicationAdapter {
-	private TextureRegion test_r;
-	private TextureRegion test_g;
-	private TextureRegion test_b;
 	private TileSystem tile_system;
 	private TileSystem.TileMap text; // Test map
 	
@@ -17,7 +14,7 @@ public class AutoRPG extends ApplicationAdapter {
 		// Initializes tile system and text map.
 		tile_system = new TileSystem();
 		// Generate new map with the text "Hellow World"
-		text = tile_system.string_to_tilemap("Hello World");
+		text = tile_system.string_to_tilemap("Hello\nWorld!");
 	}
 
 	@Override
@@ -28,7 +25,7 @@ public class AutoRPG extends ApplicationAdapter {
 		
 		tile_system.batch_begin();
 		// Draw map
-		text.draw(1, 1, 0, 0, 11, 1);
+		text.draw(1, 1, 0, 0, 6, 2);
 		tile_system.batch_end();
 	}
 	

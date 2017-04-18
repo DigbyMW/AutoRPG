@@ -76,16 +76,19 @@ public class TileSystem {
 		
 		// Initialize empty map with the right size
 		TileMap map = new TileMap(map_length, lines);
-		int line = 0;
+		int line = lines - 1;
+		int character = 0;
 		
 		// Populate map with character tiles
 		for (int i = 0; i < text.length(); i ++) {
 			if (text.charAt(i) != '\n') {
 				// Use ascii from character to get the right tile
-				map.set(font[(int) text.charAt(i)], i, line);
+				map.set(font[(int) text.charAt(i)], character, line);
+				character ++;
 			} else {
 				// Move down a line for line breaks
-				line ++;
+				line --;
+				character = 0;
 			}
 		}
 		

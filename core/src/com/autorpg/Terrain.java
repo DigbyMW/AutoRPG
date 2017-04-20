@@ -1,16 +1,119 @@
 package com.autorpg;
 
+// ShapeRenderer used to output map
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
 public class Terrain {
-	public void average_test(double num1, double num2, double num3, double num4, double variation) {
-		System.out.println("" + average(num1, num2, num3, num4, variation));
+	double[][] map; // Contains heightmap
+	
+	// Constructor generates the heightmap
+	Terrain(int size, double bumpiness) {
+		// Setting up the array. map size has to be 2^n + 1.
+		int map_size = (int) (Math.pow(2, size) + 1);
+		map = new double[map_size][map_size];
+		
+		// Radomizing map corners
+		map[0][0] = Math.random();
+		map[0][map.length - 1] = Math.random();
+		map[map.length - 1][0] = Math.random();
+		map[map.length - 1][map.length - 1] = Math.random();
+		
+		
+		// Main algorithm loop
+		for (int distance = (int) Math.ceil(map.length / 2); distance >= 1; distance /= 2) {
+			
+			// distance * 2 is required a lot so it is pre-calculated here
+			double distance_double = distance * 2;
+			// Variation used to randomize each height
+			double variation = (1 - (1 / distance)) * bumpiness;
+			
+			// Diamond Stage
+			// Iterates through diagonal midpoints
+			for (int y = distance; y < map.length; y += distance_double) {
+				for (int x = distance; x < map.length; x += distance_double) {
+					
+					// Sets midpoint to randomized average of its diagonally adjacent heights
+					map[x][y] = average(variation,
+						map[x - distance][y - distance],
+						map[x - distance][y + distance],
+						map[x + distance][y - distance],
+						map[x + distance][y + distance]);
+				}
+			}
+			
+			// Square Stage
+			// Iterates through orthagonal midpoints
+			
+			// x_shift changes the offset of the midpoints on each row
+			int x_shift = distance;
+			for (int y = 0; y < map.length; y += distance) {
+				for (int x = x_shift; x < map.length; x += distance_double) {
+					
+					// Sets midpoint to randomized average of its orthoganally adjacent heights
+					
+					// Special midpoint positions:
+					if (x == 0) {
+						// Left Edge
+						map[x][y] = average(variation, map[x][y + distance], map[x][y - distance], map[x + distance][y]);
+					} else if (x == map.length - 1) {
+						// Right Edge
+						map[x][y] = average(variation, map[x][y + distance], map[x][y - distance], map[x - distance][y]);
+					} else if (y == 0) {
+						// Top Edge
+						map[x][y] = average(variation, map[x][y + distance], map[x + distance][y], map[x - distance][y]);
+					} else if (y == map.length - 1) {
+						// Bottom Edge
+						map[x][y] = average(variation, map[x][y - distance], map[x + distance][y], map[x - distance][y]);
+					}
+					
+					// Normal midpoint positions
+					else {
+						map[x][y] = average(variation,
+							map[x][y + distance],
+							map[x][y - distance],
+							map[x + distance][y],
+							map[x - distance][y]);
+					}
+				}
+				
+				// Toggle x_shift between 0 and distance
+				if (x_shift == 0) {
+					x_shift = distance;
+				} else {
+					x_shift = 0;
+				}
+			}
+		}
+		
 	}
 	
-	private double average(double num1, double num2, double num3, double num4, double variation) {
-		double result;
+	// Method to output map visualy
+	public void test() {
+		// Initialization and set up for shape_renderer
+		ShapeRenderer shape_renderer = new ShapeRenderer();
+		shape_renderer.begin(ShapeRenderer.ShapeType.Filled);
+		
+		// Iterate through indexes in map and draw them as pixels
+		for (int x = 0; x < map.length; x ++) {
+			for (int y = 0; y < map.length; y ++) {
+				
+				// Shade each pixel according to the height of each index
+				float shade = (float) map[x][y];
+				shape_renderer.setColor(shade, shade, shade, 1);
+				shape_renderer.rect(x, y, 1, 1);
+			}
+		}
+		shape_renderer.end();
+	}
+	
+	private double average(double variation, double... numbers) {
+		double result = 0;
 		
 		// Get mean average
-		result = num1 + num2 + num3 + num4;
-		result /= 4;
+		for (int i = 0; i < numbers.length; i ++) {
+			result += numbers[i];
+		}
+		result /= numbers.length;
 		
 		// Add variation
 		result = result - (variation / 2) // Allows variation to go up or down

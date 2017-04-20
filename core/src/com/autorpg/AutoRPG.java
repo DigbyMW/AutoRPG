@@ -7,31 +7,31 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion; // Used for tiles.
 
 public class AutoRPG extends ApplicationAdapter {
 	private TileSystem tile_system;
-	private TileSystem.TileMap text; // Test map
+	private Terrain test;
 	
 	@Override
 	public void create () {
-		// Initializes tile system and text map.
 		tile_system = new TileSystem();
-		// Generate new map with the text "Hellow World"
-		text = tile_system.string_to_tilemap("Hello\nWorld!");
-		
-		// Average method testing:
-		Terrain test = new Terrain();
-		for (int i = 0; i < 30; i ++) {
-			test.average_test(0.3, 0.2, 0.4, 0.5, 0.1);
-		}
+		test = new Terrain(9, 0.2);
 	}
 
 	@Override
 	public void render () {
+		
+		// Regenerate terrain when space is pressed
+		if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.SPACE)) {
+			test = new Terrain(9, 0.2);
+		}
+		
 		// Clear screen black
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
+		// Visual output of terrain generator
+		test.test();
+		
+		// Drawing tiles
 		tile_system.batch_begin();
-		// Draw map
-		text.draw(1, 1, 0, 0, 6, 2);
 		tile_system.batch_end();
 	}
 	

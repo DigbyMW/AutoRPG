@@ -1,22 +1,39 @@
 package com.autorpg;
 
-// ShapeRenderer used to output map
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Terrain {
 	double[][] map; // Contains heightmap
+	public TileSystem.TileMap tile_map; // Contains tilemap for drawing terrain
+	public TileSystem tile_system; // Used for making tile_map
+	
+	TextureRegion water;
+	TextureRegion sand;
+	TextureRegion grass;
 	
 	// Constructor generates the heightmap
 	Terrain(int size, double bumpiness) {
 		// Setting up the array. map size has to be 2^n + 1.
 		int map_size = (int) (Math.pow(2, size) + 1);
 		map = new double[map_size][map_size];
+		tile_system = new TileSystem();
+		tile_map = tile_system.new TileMap(map_size, map_size);
+		
+		// Prepare tiles
+		water = tile_system.get_tile("sand");
+		sand = tile_system.get_tile("water");
+		grass = tile_system.get_tile("grass");
 		
 		// Radomizing map corners
 		map[0][0] = Math.random();
 		map[0][map.length - 1] = Math.random();
 		map[map.length - 1][0] = Math.random();
 		map[map.length - 1][map.length - 1] = Math.random();
+		// Set corner tiles
+		set_tile(0, 0);
+		set_tile(0, map.length - 1);
+		set_tile(map.length - 1, 0);
+		set_tile(map.length - 1, map.length - 1);
 		
 		
 		// Main algorithm loop
@@ -38,6 +55,9 @@ public class Terrain {
 						map[x - distance][y + distance],
 						map[x + distance][y - distance],
 						map[x + distance][y + distance]);
+					
+					// Set tile for this midpoint
+					set_tile(x, y);
 				}
 			}
 			
@@ -74,6 +94,8 @@ public class Terrain {
 							map[x + distance][y],
 							map[x - distance][y]);
 					}
+					
+					set_tile(x, y);
 				}
 				
 				// Toggle x_shift between 0 and distance
@@ -84,26 +106,6 @@ public class Terrain {
 				}
 			}
 		}
-		
-	}
-	
-	// Method to output map visualy
-	public void test() {
-		// Initialization and set up for shape_renderer
-		ShapeRenderer shape_renderer = new ShapeRenderer();
-		shape_renderer.begin(ShapeRenderer.ShapeType.Filled);
-		
-		// Iterate through indexes in map and draw them as pixels
-		for (int x = 0; x < map.length; x ++) {
-			for (int y = 0; y < map.length; y ++) {
-				
-				// Shade each pixel according to the height of each index
-				float shade = (float) map[x][y];
-				shape_renderer.setColor(shade, shade, shade, 1);
-				shape_renderer.rect(x, y, 1, 1);
-			}
-		}
-		shape_renderer.end();
 	}
 	
 	private double average(double variation, double... numbers) {
@@ -128,5 +130,20 @@ public class Terrain {
 		}
 		
 		return result;
+	}
+	
+	// Set tile in tile_map according to the height map
+	private void set_tile(int x, int y) {
+		if (map[x][y] < 0.5) {
+			tile_map.set(water, x, y);
+		} else if (map[x][y] < 0.6) {
+			tile_map.set(sand, x, y);
+		} else {
+			tile_map.set(grass, x, y);
+		}
+	}
+	
+	public void dispose() {
+		tile_system.dispose();
 	}
 }

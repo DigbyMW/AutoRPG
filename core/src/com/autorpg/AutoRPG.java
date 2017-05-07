@@ -12,13 +12,23 @@ public class AutoRPG extends ApplicationAdapter {
 	// Player coordinates
 	private int player_x;
 	private int player_y;
+	private int swords;
 	private TextureRegion player_tile;
 	
 	@Override
 	public void create () {
 		tile_system = new TileSystem();
-		terrain = new Terrain(9, 0.3);
+		terrain = new Terrain(5, 0.3, 50);
 		player_tile = tile_system.get_tile("player");
+		
+		player_x = (int) (Math.random() * terrain.get_size());
+		player_y = (int) (Math.random() * terrain.get_size());
+		swords = 0;
+		
+		while (terrain.waterCollision(player_x, player_y)) {
+			player_x = (int) (Math.random() * terrain.get_size());
+			player_y = (int) (Math.random() * terrain.get_size());
+		}
 	}
 
 	@Override
@@ -27,26 +37,66 @@ public class AutoRPG extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
+		int old_x = player_x;
+		int old_y = player_y;
+		
 		// Input
-		if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.RIGHT) && !terrain.checkCollision(player_x + 1, player_y)) {
+		if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.RIGHT)) {
 			player_x ++;
-		} if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.LEFT) && !terrain.checkCollision(player_x - 1, player_y)) {
+		} if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.LEFT)) {
 			player_x --;
-		} if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.UP) && !terrain.checkCollision(player_x, player_y + 1)) {
+		} if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.UP)) {
 			player_y ++;
-		} if (Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.DOWN) && !terrain.checkCollision(player_x, player_y - 1)) {
+		} if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.DOWN)) {
 			player_y --;
+		}
+		
+		if (terrain.edgeCollision(player_x, player_y)) {
+			player_x = old_x;
+			player_y = old_y;
+		}
+		
+		// Interaction
+		if (old_x != player_x || old_y != player_y) {
+			if (terrain.waterCollision(player_x, player_y)) {
+				swords --;
+				player_tile = tile_system.get_tile("ship");
+			} else {
+				player_tile = tile_system.get_tile("player");
+				if (terrain.swordCollision(player_x, player_y)) {
+					swords ++;
+				}
+			}
+		}
+		if (swords < 0) {
+			end_game();
 		}
 		
 		// Drawing Terrain
 		terrain.tile_system.batch_begin();
-		terrain.tile_map.draw(0, 0, player_x - 20, player_y - 15, 40, 30);
+		terrain.tilemap_terrain.draw(0, 0, player_x - 20, player_y - 15, 40, 30);
+		terrain.tilemap_swords.draw(0, 0, player_x - 20, player_y - 15, 40, 30);
 		terrain.tile_system.batch_end();
 		
 		// Drawing other tiles
 		tile_system.batch_begin();
+		tile_system.string_to_tilemap("Swords " + swords).draw(0, 0, 0, 0, 10, 1);
 		tile_system.draw_tile(player_tile, 20, 15);
 		tile_system.batch_end();
+	}
+	
+	private void end_game() {
+		terrain = new Terrain(5, 0.3, 50);
+		player_tile = tile_system.get_tile("player");
+		
+		player_x = (int) (Math.random() * terrain.get_size());
+		player_y = (int) (Math.random() * terrain.get_size());
+		swords = 0;
+		
+		while (terrain.waterCollision(player_x, player_y)) {
+			player_x = (int) (Math.random() * terrain.get_size());
+			player_y = (int) (Math.random() * terrain.get_size());
+		}
 	}
 	
 	@Override

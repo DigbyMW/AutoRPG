@@ -4,25 +4,31 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Terrain {
 	double[][] map; // Contains heightmap
-	public TileSystem.TileMap tile_map; // Contains tilemap for drawing terrain
-	public TileSystem tile_system; // Used for making tile_map
+	public TileSystem.TileMap tilemap_terrain; // Contains tilemap for drawing terrain
+	public TileSystem.TileMap tilemap_swords;
+	public TileSystem tile_system; // Used for making tilemap_terrain
+	private boolean[][] swords;
 	
 	TextureRegion water;
 	TextureRegion sand;
 	TextureRegion grass;
+	TextureRegion sword;
 	
 	// Constructor generates the heightmap
-	Terrain(int size, double bumpiness) {
+	Terrain(int size, double bumpiness, int sword_count) {
 		// Setting up the array. map size has to be 2^n + 1.
 		int map_size = (int) (Math.pow(2, size) + 1);
 		map = new double[map_size][map_size];
+		swords = new boolean[map_size][map_size];
 		tile_system = new TileSystem();
-		tile_map = tile_system.new TileMap(map_size, map_size);
+		tilemap_terrain = tile_system.new TileMap(map_size, map_size);
+		tilemap_swords = tile_system.new TileMap(map_size, map_size);
 		
 		// Prepare tiles
 		water = tile_system.get_tile("water");
 		sand = tile_system.get_tile("sand");
 		grass = tile_system.get_tile("grass");
+		sword = tile_system.get_tile("sword");
 		
 		// Radomizing map corners
 		map[0][0] = Math.random();
@@ -106,6 +112,24 @@ public class Terrain {
 				}
 			}
 		}
+		
+		// Generate swords
+		for (int i = 0; i < sword_count; i ++) {
+			int x = (int) (Math.random() * map_size);
+			int y = (int) (Math.random() * map_size);
+			
+			while(swords[x][y] || waterCollision(x, y)) {
+				x = (int) (Math.random() * map_size);
+				y = (int) (Math.random() * map_size);
+			}
+			
+			tilemap_swords.set(sword, x, y);
+			swords[x][y] = true;
+		}
+	}
+	
+	public int get_size() {
+		return map.length;
 	}
 	
 	private double average(double variation, double... numbers) {
@@ -132,19 +156,38 @@ public class Terrain {
 		return result;
 	}
 	
-	// Set tile in tile_map according to the height map
+	// Set tile in tilemap_terrain according to the height map
 	private void set_tile(int x, int y) {
 		if (map[x][y] < 0.5) {
-			tile_map.set(water, x, y);
+			tilemap_terrain.set(water, x, y);
 		} else if (map[x][y] < 0.6) {
-			tile_map.set(sand, x, y);
+			tilemap_terrain.set(sand, x, y);
 		} else {
-			tile_map.set(grass, x, y);
+			tilemap_terrain.set(grass, x, y);
 		}
 	}
 	
-	public boolean checkCollision(int x, int y) {
-		return x < 0 || y < 0 || x > map.length || y > map.length || map[x][y] < 0.5;
+	public boolean waterCollision(int x, int y) {
+		if (!edgeCollision(x, y)) {
+			return map[x][y] < 0.5;
+		}
+		return false;
+	}
+	
+	public boolean swordCollision(int x, int y) {
+		if (!edgeCollision(x, y)) {
+			boolean result = swords[x][y];
+			if (result) {
+				swords[x][y] = false;
+				tilemap_swords.set(null, x, y);
+			}
+			return result;
+		}
+		return false;
+	}
+	
+	public boolean edgeCollision(int x, int y) {
+		return x < 0 || y < 0 || x > map.length - 1 || y > map.length - 1;
 	}
 	
 	public void dispose() {

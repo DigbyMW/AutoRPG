@@ -13,7 +13,7 @@ public class TileSystem {
 	TileSystem () {
 		// Initialization
 		sprite_batch = new SpriteBatch();
-		tiles = new Tiles(9);
+		tiles = new Tiles(15);
 		
 		// Add content to tiles.
 		tiles.add("test r", new Texture(Gdx.files.internal("test.png")), 0);
@@ -25,6 +25,13 @@ public class TileSystem {
 		tiles.add("player", new Texture(Gdx.files.internal("player.png")), 0);
 		tiles.add("ship", new Texture(Gdx.files.internal("player.png")), 1);
 		tiles.add("sword", new Texture(Gdx.files.internal("sword.png")), 0);
+		
+		tiles.add("monster1", new Texture(Gdx.files.internal("monsters.png")), 0);
+		tiles.add("monster2", new Texture(Gdx.files.internal("monsters.png")), 1);
+		tiles.add("monster3", new Texture(Gdx.files.internal("monsters.png")), 2);
+		tiles.add("monster4", new Texture(Gdx.files.internal("monsters.png")), 3);
+		tiles.add("monster5", new Texture(Gdx.files.internal("monsters.png")), 4);
+		tiles.add("monster6", new Texture(Gdx.files.internal("monsters.png")), 5);
 		
 		// Set characters
 		font = new TextureRegion[128];
@@ -127,7 +134,7 @@ public class TileSystem {
 			for (int i = 0; i < tiles_index; i ++) {
 				// Iterate thorugh tiles and return the one that
 				// matches name.
-				if (tile_names[i] == name) {
+				if (tile_names[i].equals(name)) {
 					return tiles[i];
 				}
 			}

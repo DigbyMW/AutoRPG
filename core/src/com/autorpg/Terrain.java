@@ -5,30 +5,40 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Terrain {
 	double[][] map; // Contains heightmap
 	public TileSystem.TileMap tilemap_terrain; // Contains tilemap for drawing terrain
-	public TileSystem.TileMap tilemap_swords;
+	public TileSystem.TileMap tilemap_swordsAndMonsters;
 	public TileSystem tile_system; // Used for making tilemap_terrain
 	private boolean[][] swords;
+	private boolean[][] monsters;
 	
 	TextureRegion water;
 	TextureRegion sand;
 	TextureRegion grass;
 	TextureRegion sword;
 	
+	TextureRegion[] monster_tiles;
+	
 	// Constructor generates the heightmap
-	Terrain(int size, double bumpiness, int sword_count) {
+	Terrain(int size, double bumpiness, int sword_count, int monster_count) {
 		// Setting up the array. map size has to be 2^n + 1.
 		int map_size = (int) (Math.pow(2, size) + 1);
 		map = new double[map_size][map_size];
 		swords = new boolean[map_size][map_size];
+		monsters = new boolean[map_size][map_size];
 		tile_system = new TileSystem();
 		tilemap_terrain = tile_system.new TileMap(map_size, map_size);
-		tilemap_swords = tile_system.new TileMap(map_size, map_size);
+		tilemap_swordsAndMonsters = tile_system.new TileMap(map_size, map_size);
 		
 		// Prepare tiles
 		water = tile_system.get_tile("water");
 		sand = tile_system.get_tile("sand");
 		grass = tile_system.get_tile("grass");
 		sword = tile_system.get_tile("sword");
+		
+		monster_tiles = new TextureRegion[6];
+		for (int i = 0; i < monster_tiles.length; i ++) {
+			String label = "monster" + (i + 1);
+			monster_tiles[i] = tile_system.get_tile(label);
+		}
 		
 		// Radomizing map corners
 		map[0][0] = Math.random();
@@ -123,8 +133,22 @@ public class Terrain {
 				y = (int) (Math.random() * map_size);
 			}
 			
-			tilemap_swords.set(sword, x, y);
+			tilemap_swordsAndMonsters.set(sword, x, y);
 			swords[x][y] = true;
+		}
+		
+		// Generate monsters
+		for (int i = 0; i < monster_count; i ++) {
+			int x = (int) (Math.random() * map_size);
+			int y = (int) (Math.random() * map_size);
+			
+			while(monsters[x][y] || waterCollision(x, y) || swords[x][y]) {
+				x = (int) (Math.random() * map_size);
+				y = (int) (Math.random() * map_size);
+			}
+			
+			tilemap_swordsAndMonsters.set(monster_tiles[(int)(Math.random() * 6)], x, y);
+			monsters[x][y] = true;
 		}
 	}
 	
@@ -179,7 +203,19 @@ public class Terrain {
 			boolean result = swords[x][y];
 			if (result) {
 				swords[x][y] = false;
-				tilemap_swords.set(null, x, y);
+				tilemap_swordsAndMonsters.set(null, x, y);
+			}
+			return result;
+		}
+		return false;
+	}
+	
+	public boolean monsterCollision(int x, int y) {
+		if (!edgeCollision(x, y)) {
+			boolean result = monsters[x][y];
+			if (result) {
+				monsters[x][y] = false;
+				tilemap_swordsAndMonsters.set(null, x, y);
 			}
 			return result;
 		}

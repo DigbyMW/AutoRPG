@@ -18,7 +18,7 @@ public class AutoRPG extends ApplicationAdapter {
 	@Override
 	public void create () {
 		tile_system = new TileSystem();
-		terrain = new Terrain(5, 0.3, 50);
+		terrain = new Terrain(5, 0.3, 50, 12);
 		player_tile = tile_system.get_tile("player");
 		
 		player_x = (int) (Math.random() * terrain.get_size());
@@ -65,6 +65,8 @@ public class AutoRPG extends ApplicationAdapter {
 				player_tile = tile_system.get_tile("player");
 				if (terrain.swordCollision(player_x, player_y)) {
 					swords ++;
+				} if (terrain.monsterCollision(player_x, player_y)) {
+					swords -= 2;
 				}
 			}
 		}
@@ -75,7 +77,7 @@ public class AutoRPG extends ApplicationAdapter {
 		// Drawing Terrain
 		terrain.tile_system.batch_begin();
 		terrain.tilemap_terrain.draw(0, 0, player_x - 20, player_y - 15, 40, 30);
-		terrain.tilemap_swords.draw(0, 0, player_x - 20, player_y - 15, 40, 30);
+		terrain.tilemap_swordsAndMonsters.draw(0, 0, player_x - 20, player_y - 15, 40, 30);
 		terrain.tile_system.batch_end();
 		
 		// Drawing other tiles
@@ -86,7 +88,7 @@ public class AutoRPG extends ApplicationAdapter {
 	}
 	
 	private void end_game() {
-		terrain = new Terrain(5, 0.3, 50);
+		terrain = new Terrain(5, 0.3, 50, 12);
 		player_tile = tile_system.get_tile("player");
 		
 		player_x = (int) (Math.random() * terrain.get_size());

@@ -13,7 +13,7 @@ public class TileSystem {
 	TileSystem () {
 		// Initialization
 		sprite_batch = new SpriteBatch();
-		tiles = new Tiles(6);
+		tiles = new Tiles(8);
 		
 		// Add content to tiles.
 		tiles.add("test r", new Texture(Gdx.files.internal("test.png")), 0);
@@ -22,6 +22,8 @@ public class TileSystem {
 		tiles.add("water", new Texture(Gdx.files.internal("terrain.png")), 0);
 		tiles.add("sand", new Texture(Gdx.files.internal("terrain.png")), 1);
 		tiles.add("grass", new Texture(Gdx.files.internal("terrain.png")), 2);
+		tiles.add("player", new Texture(Gdx.files.internal("player.png")), 0);
+		tiles.add("ship", new Texture(Gdx.files.internal("player.png")), 1);
 		
 		// Set characters
 		font = new TextureRegion[128];

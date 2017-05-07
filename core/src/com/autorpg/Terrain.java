@@ -20,8 +20,8 @@ public class Terrain {
 		tile_map = tile_system.new TileMap(map_size, map_size);
 		
 		// Prepare tiles
-		water = tile_system.get_tile("sand");
-		sand = tile_system.get_tile("water");
+		water = tile_system.get_tile("water");
+		sand = tile_system.get_tile("sand");
 		grass = tile_system.get_tile("grass");
 		
 		// Radomizing map corners
@@ -141,6 +141,10 @@ public class Terrain {
 		} else {
 			tile_map.set(grass, x, y);
 		}
+	}
+	
+	public boolean checkCollision(int x, int y) {
+		return x < 0 || y < 0 || x > map.length || y > map.length || map[x][y] < 0.5;
 	}
 	
 	public void dispose() {

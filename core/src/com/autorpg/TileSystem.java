@@ -13,7 +13,7 @@ public class TileSystem {
 	TileSystem () {
 		// Initialization
 		sprite_batch = new SpriteBatch();
-		tiles = new Tiles(15);
+		tiles = new Tiles(25);
 		
 		// Add content to tiles.
 		tiles.add("test r", new Texture(Gdx.files.internal("test.png")), 0);
@@ -32,6 +32,18 @@ public class TileSystem {
 		tiles.add("monster4", new Texture(Gdx.files.internal("monsters.png")), 3);
 		tiles.add("monster5", new Texture(Gdx.files.internal("monsters.png")), 4);
 		tiles.add("monster6", new Texture(Gdx.files.internal("monsters.png")), 5);
+		
+		tiles.add("ui border top left", new Texture(Gdx.files.internal("ui.png")), 0);
+		tiles.add("ui border top middle", new Texture(Gdx.files.internal("ui.png")), 1);
+		tiles.add("ui border top right", new Texture(Gdx.files.internal("ui.png")), 2);
+		tiles.add("ui border middle left", new Texture(Gdx.files.internal("ui.png")), 3);
+		tiles.add("ui border middle middle", new Texture(Gdx.files.internal("ui.png")), 4);
+		tiles.add("ui border middle right", new Texture(Gdx.files.internal("ui.png")), 5);
+		tiles.add("ui border bottom left", new Texture(Gdx.files.internal("ui.png")), 6);
+		tiles.add("ui border bottom middle", new Texture(Gdx.files.internal("ui.png")), 7);
+		tiles.add("ui border bottom right", new Texture(Gdx.files.internal("ui.png")), 8);
+		
+		tiles.add("ui pointer", new Texture(Gdx.files.internal("ui.png")), 9);
 		
 		// Set characters
 		font = new TextureRegion[128];
@@ -155,6 +167,14 @@ public class TileSystem {
 		
 		public void set(TextureRegion tile, int x, int y) {
 			map[x][y] = tile;
+		}
+		
+		public int get_width() {
+			return map.length;
+		}
+		
+		public int get_height() {
+			return map[0].length;
 		}
 		
 		/*
